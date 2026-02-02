@@ -1,0 +1,1773 @@
+{% extends "layout.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<style>
+    /* ==================== VARIABLES ==================== */
+    :root {
+        --primary-blue: #3b82f6;
+        --primary-dark: #1e3a8a;
+        --success-green: #10b981;
+        --warning-orange: #f59e0b;
+        --danger-red: #ef4444;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-700: #374151;
+        --gray-900: #111827;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+
+    /* ==================== HERO SECTION (SAMA DENGAN INDEX) ==================== */
+    .hero-section {
+        position: relative;
+        background: url('{{ url_for('static', filename='image/hero_section.jpg') }}');
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        text-align: center;
+        padding: 80px 24px;
+        border-radius: 20px;
+        margin-bottom: 50px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        color: white;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Cinematic Zoom Effect - Smooth and Slow */
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -5%;
+        left: -5%;
+        width: 110%;
+        height: 110%;
+        background: inherit;
+        background-size: cover;
+        background-position: center;
+        animation: cinematicZoomIn 20s ease-in-out infinite alternate;
+        z-index: 0;
+    }
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4));
+        z-index: 1;
+    }
+
+    @keyframes cinematicZoomIn {
+        0% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(1.08);
+        }
+    }
+
+    .hero-content-wrapper {
+        z-index: 2;
+        position: relative;
+    }
+
+    /* Teks di pojok kanan bawah hero section */
+    .hero-bottom-text {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        z-index: 2;
+        text-align: right;
+    }
+
+    .hero-bottom-text p {
+        font-size: 1.3rem;
+        margin: 2px 0;
+        line-height: 1.4;
+        color: #FFFFFF !important;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 
+                     1px 1px 3px rgba(0, 0, 0, 1),
+                     0 0 15px rgba(0, 0, 0, 0.6);
+        filter: brightness(1.1);
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        letter-spacing: -1px;
+        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: none;
+        filter: drop-shadow(3px 3px 8px rgba(0, 0, 0, 0.9))
+                 drop-shadow(1px 1px 4px rgba(0, 0, 0, 1))
+                 drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        max-width: 800px;
+        margin: 0 auto 30px;
+        line-height: 1.8;
+        color: #FFFFFF !important;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 
+                     1px 1px 3px rgba(0, 0, 0, 1),
+                     0 0 15px rgba(0, 0, 0, 0.6);
+        filter: brightness(1.1);
+    }
+
+    /* ==================== INFO CARDS - INTERACTIVE & INFORMATIVE ==================== */
+    .info-cards-container {
+        margin-bottom: 40px;
+    }
+
+    .info-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--card-color) 0%, var(--card-color-light) 100%);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+    }
+
+    .info-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .info-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        border-color: var(--card-color);
+    }
+
+    .info-card.primary {
+        --card-color: #059669;
+        --card-color-light: #60a5fa;
+    }
+
+    .info-card.success {
+        --card-color: #10b981;
+        --card-color-light: #34d399;
+    }
+
+    .info-card.warning {
+        --card-color: #f59e0b;
+        --card-color-light: #fbbf24;
+    }
+
+    .info-card-header {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--gray-200);
+    }
+
+    .info-card-title {
+        font-size: 0.85rem;
+        color: var(--gray-700);
+        margin-bottom: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+    }
+
+    .info-card-value {
+        font-size: 2.75rem;
+        font-weight: 800;
+        color: var(--card-color);
+        margin-bottom: 8px;
+        line-height: 1;
+        background: linear-gradient(135deg, var(--card-color) 0%, var(--card-color-light) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .info-card-description {
+        font-size: 0.95rem;
+        color: #6b7280;
+        line-height: 1.6;
+        margin-top: 15px;
+    }
+
+    .info-card-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    .info-card-meta-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    .info-card-meta-label {
+        color: var(--gray-700);
+        font-weight: 600;
+    }
+
+    .info-card-meta-value {
+        color: var(--card-color);
+        font-weight: 700;
+        padding: 4px 12px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+        border-radius: 12px;
+    }
+
+    /* ==================== FILTER PANEL ==================== */
+    .filter-panel-container {
+        margin-bottom: 30px;
+    }
+
+    .filter-panel {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+
+    .filter-panel:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        border-color: #059669;
+    }
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #e5e7eb;
+    }
+
+    .filter-header h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e3a8a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-reset {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-reset:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    }
+
+    .btn-reset:active {
+        transform: translateY(0);
+    }
+
+    .filter-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filter-group label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .filter-select {
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        color: #374151;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .filter-select:hover {
+        border-color: #059669;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #059669;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .filter-summary {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        padding: 15px 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 2px solid #93c5fd;
+    }
+
+    .summary-icon {
+        font-size: 1.5rem;
+    }
+
+    #summaryText {
+        font-size: 1rem;
+        color: #1e3a8a;
+        font-weight: 500;
+    }
+
+    #summaryText strong {
+        color: #1e40af;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .filter-content {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .btn-reset {
+            width: 100%;
+        }
+    }
+
+
+    /* Status Badge */
+    .status-badge {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        color: white;
+        margin-top: 10px;
+    }
+
+    /* ==================== MAP CONTAINER ==================== */
+    .map-container {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .map-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--gray-200);
+    }
+
+    .map-header h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin: 0;
+    }
+
+    .map-info {
+        display: flex;
+        gap: 20px;
+        font-size: 0.9rem;
+        color: var(--gray-700);
+        flex-wrap: wrap;
+    }
+
+    .map-info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: var(--gray-100);
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    #map {
+        height: 600px;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 2px solid var(--gray-200);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ==================== LEGEND ==================== */
+    .map-legend-container {
+        background: white;
+        border-radius: 15px;
+        padding: 20px 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-top: 20px;
+    }
+
+    .legend-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 15px;
+    }
+
+    .legend-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        border-radius: 10px;
+        background: var(--gray-100);
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+
+    .legend-item:hover {
+        background: var(--gray-200);
+        transform: translateX(5px);
+        border-left-color: var(--item-color);
+    }
+
+    .legend-color {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .legend-text {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .legend-label {
+        font-weight: 600;
+        color: var(--gray-900);
+        font-size: 0.9rem;
+    }
+
+    .legend-description {
+        font-size: 0.8rem;
+        color: var(--gray-700);
+    }
+
+    /* Legend Colors */
+    .legend-item.low {
+        --item-color: #10b981;
+    }
+
+    .legend-item.low .legend-color {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    }
+
+    .legend-item.medium {
+        --item-color: #f59e0b;
+    }
+
+    .legend-item.medium .legend-color {
+        background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    }
+
+    .legend-item.high {
+        --item-color: #ef4444;
+    }
+
+    .legend-item.high .legend-color {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    }
+
+    .legend-item.extreme {
+        --item-color: #7c3aed;
+    }
+
+    .legend-item.extreme .legend-color {
+        background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+    }
+
+    /* ==================== POPUP STYLES ==================== */
+    .custom-popup {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-width: 280px;
+    }
+
+    .popup-header {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, #2563eb 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 8px 8px 0 0;
+        margin: -15px -15px 15px -15px;
+    }
+
+    .popup-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .popup-date {
+        font-size: 0.85rem;
+        opacity: 0.9;
+    }
+
+    .popup-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .popup-info-row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 10px;
+        background: var(--gray-100);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .popup-info-row:hover {
+        background: var(--gray-200);
+        transform: translateX(3px);
+    }
+
+    .popup-info-content {
+        flex: 1;
+    }
+
+    .popup-label {
+        font-size: 0.75rem;
+        color: var(--gray-700);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .popup-value {
+        font-size: 0.95rem;
+        color: var(--gray-900);
+        font-weight: 600;
+    }
+
+    .popup-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .popup-status.pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .popup-status.terverifikasi {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .popup-status.selesai {
+        background: #dbeafe;
+        color: #1e3a8a;
+    }
+
+    /* ==================== STATUS INFO BUTTON ==================== */
+    .status-info-btn-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .status-info-btn {
+        background: rgba(255, 255, 255, 0.98);
+        color: #059669;
+        border: 2px solid #059669;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+    }
+
+    .status-info-btn:hover {
+        background: #059669;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+    }
+
+    .status-info-btn:active {
+        transform: translateY(0);
+    }
+
+    /* Tooltip */
+    .status-info-btn-wrapper .tooltip-text {
+        visibility: hidden;
+        opacity: 0;
+        background: #1a2e24;
+        color: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+        padding: 6px 14px;
+        border-radius: 6px;
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+        pointer-events: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .status-info-btn-wrapper .tooltip-text::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: #1a2e24;
+    }
+
+    .status-info-btn-wrapper:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    /* ==================== STATUS MODAL ==================== */
+    .status-modal {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .status-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .status-modal-content {
+        background: white;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 85vh;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    @keyframes slideUp {
+        from { 
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .status-modal-header {
+        background: linear-gradient(135deg, #2d4a3e 0%, #1a2e24 100%);
+        color: white;
+        padding: 20px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .status-modal-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status-modal-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .status-modal-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+    }
+
+    .status-modal-body {
+        padding: 25px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .status-info-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border-left: 4px solid #059669;
+        transition: all 0.3s ease;
+    }
+
+    .status-info-item:hover {
+        background: #f1f5f9;
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.12);
+    }
+
+    .status-info-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .pending-icon {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .verified-icon {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .resolved-icon {
+        background: #dbeafe;
+        color: #1e3a8a;
+    }
+
+    .status-info-content h4 {
+        margin: 0 0 12px 0;
+        color: #1e293b;
+        font-size: 1.1rem;
+    }
+
+    .status-info-content ul {
+        margin: 0;
+        padding-left: 20px;
+        list-style: none;
+    }
+
+    .status-info-content ul li {
+        margin-bottom: 8px;
+        color: #475569;
+        line-height: 1.6;
+        position: relative;
+        padding-left: 20px;
+    }
+
+    .status-info-content ul li:before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: #059669;
+        font-weight: bold;
+    }
+
+    .status-info-content ul li strong {
+        color: #1e293b;
+    }
+
+    /* Timeline */
+    .status-info-timeline {
+        margin-top: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+        border-radius: 12px;
+        border: 2px solid #bae6fd;
+    }
+
+    .status-info-timeline h4 {
+        margin: 0 0 20px 0;
+        color: #0c4a6e;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .timeline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .timeline-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        color: #1e293b;
+    }
+
+    .timeline-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .pending-dot {
+        background: #fbbf24;
+    }
+
+    .verified-dot {
+        background: #10b981;
+    }
+
+    .resolved-dot {
+
+        background: #059669;
+    }
+
+    .timeline-arrow {
+        color: #64748b;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .timeline-duration {
+        display: flex;
+        justify-content: space-around;
+        font-size: 0.85rem;
+        color: #64748b;
+        font-style: italic;
+    }
+
+    /* Tip Box */
+    .status-info-tip {
+        margin-top: 20px;
+        padding: 15px;
+        background: #fef3c7;
+        border-left: 4px solid #fbbf24;
+        border-radius: 8px;
+        color: #92400e;
+        display: flex;
+        align-items: start;
+        gap: 12px;
+    }
+
+    .status-info-tip i {
+        font-size: 20px;
+        margin-top: 2px;
+    }
+
+    .status-modal-footer {
+        padding: 15px 25px;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .status-modal-btn-close {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .status-modal-btn-close:hover {
+        background: linear-gradient(135deg, #047857, #065f46);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 992px) {
+        .hero-title {
+            font-size: 2.8rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.15rem;
+        }
+        
+        .info-card-value {
+            font-size: 2.25rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 60px 20px;
+            min-height: 400px;
+        }
+        
+        .hero-title {
+            font-size: 2.2rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.05rem;
+        }
+        
+        .hero-bottom-text {
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        .hero-bottom-text p {
+            font-size: 1.05rem;
+            margin: 2px 0;
+            line-height: 1.3;
+        }
+        
+        .info-card {
+            padding: 20px;
+        }
+
+        .info-card-value {
+            font-size: 2rem;
+        }
+
+        .map-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .map-info {
+            width: 100%;
+        }
+
+        #map {
+            height: 450px;
+        }
+
+        .legend-items {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 1.8rem;
+        }
+        
+        .hero-section {
+            min-height: 350px;
+            padding: 40px 15px;
+        }
+        
+        .hero-bottom-text {
+            bottom: 15px;
+            right: 15px;
+        }
+        
+        .hero-bottom-text p {
+            font-size: 0.9rem;
+            margin: 1px 0;
+            line-height: 1.3;
+        }
+
+        .info-card-value {
+            font-size: 1.75rem;
+        }
+
+        #map {
+            height: 400px;
+        }
+
+        /* Modal Responsive */
+        .status-modal-content {
+            width: 95%;
+            max-height: 90vh;
+            margin: 10px;
+        }
+
+        .status-modal-header {
+            padding: 15px 20px;
+        }
+
+        .status-modal-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .status-modal-body {
+            padding: 15px;
+        }
+
+        .status-info-item {
+            flex-direction: column;
+            padding: 15px;
+        }
+
+        .status-info-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+
+        .status-info-content h4 {
+            font-size: 1rem;
+        }
+
+        .status-info-content ul li {
+            font-size: 0.9rem;
+        }
+
+        .timeline {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .timeline-arrow {
+            transform: rotate(90deg);
+        }
+
+        .timeline-duration {
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .status-info-tip {
+            font-size: 0.9rem;
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section dengan Background Image (SAMA DENGAN INDEX.HTML) -->
+<div class="hero-section">
+    <div class="hero-content-wrapper">
+        <h1 class="hero-title">PETA SEBARAN BANJIR</h1>
+        <p class="hero-subtitle">
+            Visualisasi geografis dari laporan banjir yang telah tercatat.
+        </p>
+    </div>>
+</div>
+
+<!-- Filter Panel -->
+<div class="filter-panel-container">
+    <div class="filter-panel">
+        <div class="filter-header">
+            <h4> Filter Data Banjir</h4>
+            <button id="resetFilters" class="btn-reset">Reset Filter</button>
+        </div>
+        <div class="filter-content">
+            <div class="filter-group">
+                <label for="monthFilter"> Periode Bulan:</label>
+                <select id="monthFilter" class="filter-select">
+                    <option value="all">Semua Bulan</option>
+                    {% if available_months %}
+                        {% for month in available_months %}
+                            {% set parts = month.split('-') %}
+                            {% set month_names = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] %}
+                            <option value="{{ month }}">{{ month_names[parts[1]|int] }} {{ parts[0] }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="heightFilter"> Tinggi Banjir:</label>
+                <select id="heightFilter" class="filter-select">
+                    <option value="all">Semua Tinggi</option>
+                    <option value="low">Normal</option>
+                    <option value="low">Rendah</option>
+                    <option value="medium">Sedang</option>
+                    <option value="high">Tinggi</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="statusFilter"> Status Laporan:</label>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <select id="statusFilter" class="filter-select" style="flex: 1;">
+                        <option value="all">Semua Status</option>
+                        <option value="pending"> Pending</option>
+                        <option value="terverifikasi"> Terverifikasi</option>
+                        <option value="selesai"> Selesai</option>
+                    </select>
+                    <div class="status-info-btn-wrapper">
+                        <button id="statusInfoBtn" class="status-info-btn">Info Status</button>
+                        <span class="tooltip-text">Info Status Laporan</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Info Status -->
+        <div id="statusInfoModal" class="status-modal">
+            <div class="status-modal-content">
+                <div class="status-modal-header">
+                    <h3><i class="fas fa-clipboard-list"></i> Informasi Status Laporan Banjir</h3>
+                    <button class="status-modal-close" id="closeModalBtn">&times;</button>
+                </div>
+                <div class="status-modal-body">
+                    <div class="status-info-item">
+                        <div class="status-info-icon pending-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="status-info-content">
+                            <h4>🟡 PENDING (Menunggu Verifikasi)</h4>
+                            <ul>
+                                <li><strong>Arti:</strong> Laporan baru masuk ke sistem</li>
+                                <li><strong>Status:</strong> Belum diverifikasi petugas</li>
+                                <li><strong>Tindakan:</strong> Tim akan melakukan pengecekan lokasi</li>
+                                <li><strong>Estimasi:</strong> Verifikasi dalam 1-2 jam (jam kerja)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="status-info-item">
+                        <div class="status-info-icon verified-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="status-info-content">
+                            <h4>🟢 TERVERIFIKASI (Terkonfirmasi)</h4>
+                            <ul>
+                                <li><strong>Arti:</strong> Banjir sudah dikonfirmasi ada di lokasi</li>
+                                <li><strong>Status:</strong> Dalam penanganan aktif</li>
+                                <li><strong>Tindakan:</strong> Tim sedang melakukan evakuasi & penanggulangan</li>
+                                <li><strong>Update:</strong> Status diperbarui secara real-time</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="status-info-item">
+                        <div class="status-info-icon resolved-icon">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="status-info-content">
+                            <h4>🔵 SELESAI (Sudah Ditangani)</h4>
+                            <ul>
+                                <li><strong>Arti:</strong> Banjir sudah surut, area sudah aman</li>
+                                <li><strong>Status:</strong> Kasus ditutup</li>
+                                <li><strong>Tindakan:</strong> Monitoring pasca-banjir tetap berjalan</li>
+                                <li><strong>Catatan:</strong> Data tersimpan untuk analisis & pencegahan</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="status-info-timeline">
+                        <h4><i class="fas fa-stream"></i> Timeline Proses:</h4>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <span class="timeline-dot pending-dot"></span>
+                                <span>Pending</span>
+                            </div>
+                            <div class="timeline-arrow">→</div>
+                            <div class="timeline-item">
+                                <span class="timeline-dot verified-dot"></span>
+                                <span>Terverifikasi</span>
+                            </div>
+                            <div class="timeline-arrow">→</div>
+                            <div class="timeline-item">
+                                <span class="timeline-dot resolved-dot"></span>
+                                <span>Selesai</span>
+                            </div>
+                        </div>
+                        <div class="timeline-duration">
+                            <span>0-2 jam</span>
+                            <span>2-24 jam</span>
+                            <span>24-48 jam</span>
+                        </div>
+                    </div>
+                    
+                    <div class="status-info-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Tips:</strong> Klik marker di peta untuk melihat detail lengkap setiap laporan
+                    </div>
+                </div>
+                <div class="status-modal-footer">
+                    <button class="status-modal-btn-close" id="closeModalBtnFooter">Tutup</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-summary" id="filterSummary">
+            <span id="summaryText">Menampilkan <strong id="displayedCount">0</strong> dari <strong id="totalCount">0</strong> laporan</span>
+        </div>
+    </div>
+</div>
+
+<!-- Map Container -->
+<div class="map-container">
+    <div class="map-header">
+        <h3> Titik Sebaran Banjir</h3>
+    </div>
+    <div id="map"></div>
+</div>
+
+<!-- Legend -->
+<div class="map-legend-container">
+    <div class="legend-title">Kategori Tinggi Banjir</div>
+    <div class="legend-items">
+        <div class="legend-item low">
+            <div class="legend-color"></div>
+            <div class="legend-text">
+                <div class="legend-label">Rendah</div>
+                <div class="legend-description">Kurang dari 25 cm</div>
+            </div>
+        </div>
+        <div class="legend-item medium">
+            <div class="legend-color"></div>
+            <div class="legend-text">
+                <div class="legend-label">Sedang</div>
+                <div class="legend-description">25 - 50 cm</div>
+            </div>
+        </div>
+        <div class="legend-item high">
+            <div class="legend-color"></div>
+            <div class="legend-text">
+                <div class="legend-label">Tinggi</div>
+                <div class="legend-description">50 - 100 cm</div>
+            </div>
+        </div>
+        <div class="legend-item extreme">
+            <div class="legend-color"></div>
+            <div class="legend-text">
+                <div class="legend-label">Ekstrem</div>
+                <div class="legend-description">Lebih dari 100 cm</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ==================== CONFIGURATION ====================
+    const DEFAULT_CENTER = [-7.0051, 110.4381]; // Semarang
+    const DEFAULT_ZOOM = 12;
+    
+    // ==================== INITIALIZE MAP ====================
+    const map = L.map('map', {
+        center: DEFAULT_CENTER,
+        zoom: DEFAULT_ZOOM,
+        zoomControl: true,
+        scrollWheelZoom: true
+    });
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    }).addTo(map);
+
+    // ==================== MARKER CLUSTER ====================
+    const markers = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        maxClusterRadius: 80
+    });
+
+    // ==================== HELPER FUNCTIONS ====================
+    function getFloodCategory(floodHeight) {
+        const height = parseFloat(floodHeight);
+        
+        if (isNaN(height)) {
+            // Try to extract number from string
+            const match = floodHeight.match(/\d+/);
+            if (match) {
+                const num = parseInt(match[0]);
+                if (num < 25) return 'low';
+                if (num < 50) return 'medium';
+                if (num < 100) return 'high';
+                return 'extreme';
+            }
+            return 'medium';
+        }
+        
+        if (height < 25) return 'low';
+        if (height < 50) return 'medium';
+        if (height < 100) return 'high';
+        return 'extreme';
+    }
+
+    function getMarkerIcon(category) {
+        const colors = {
+            'low': '#10b981',
+            'medium': '#f59e0b',
+            'high': '#ef4444',
+            'extreme': '#7c3aed'
+        };
+
+        return L.divIcon({
+            className: 'custom-marker-icon',
+            html: `
+                <div style="
+                    background: linear-gradient(135deg, ${colors[category]} 0%, ${colors[category]}dd 100%);
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    box-shadow: 0 0 0 3px white, 0 4px 12px rgba(0, 0, 0, 0.3);
+                    cursor: pointer;
+                    transition: transform 0.2s;
+                ">
+                </div>
+            `,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
+            popupAnchor: [0, -8]
+        });
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', { 
+            day: 'numeric', 
+            month: 'long', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function createPopupContent(report) {
+        const category = getFloodCategory(report.flood_height);
+        const statusClass = report.status || 'pending';
+        const statusText = {
+            'pending': 'Menunggu Verifikasi',
+            'terverifikasi': 'Terverifikasi',
+            'selesai': 'Telah Ditangani'
+        };
+
+        return `
+            <div class="custom-popup">
+                <div class="popup-header">
+                    <div class="popup-title">Laporan Banjir #${report.id}</div>
+                    <div class="popup-date">${formatDate(report.timestamp)}</div>
+                </div>
+                <div class="popup-content">
+                    <div class="popup-info-row">
+                        <div class="popup-info-content">
+                            <div class="popup-label">Lokasi</div>
+                            <div class="popup-value">${report.address}</div>
+                        </div>
+                    </div>
+                    <div class="popup-info-row">
+                        <div class="popup-info-content">
+                            <div class="popup-label">Tinggi Banjir</div>
+                            <div class="popup-value">${report.flood_height}</div>
+                        </div>
+                    </div>
+                    <div class="popup-info-row">
+                        <div class="popup-info-content">
+                            <div class="popup-label">Pelapor</div>
+                            <div class="popup-value">${report.reporter}</div>
+                        </div>
+                    </div>
+                    <div class="popup-info-row">
+                        <div class="popup-info-content">
+                            <div class="popup-label">Status</div>
+                            <div class="popup-value">
+                                <span class="popup-status ${statusClass}" id="status-${report.id}">
+                                    ${statusText[statusClass] || 'Pending'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="popup-info-row">
+                        <div class="popup-info-content">
+                            <div class="popup-label">Ubah Status</div>
+                            <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                                <button onclick="updateStatus(${report.id}, 'pending')" 
+                                    class="status-btn" 
+                                    style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
+                                    Pending
+                                </button>
+                                <button onclick="updateStatus(${report.id}, 'terverifikasi')" 
+                                    class="status-btn" 
+                                    style="padding: 6px 12px; border: 1px solid #10b981; border-radius: 6px; background: #dcfce7; color: #065f46; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
+                                    Verifikasi
+                                </button>
+                                <button onclick="updateStatus(${report.id}, 'selesai')" 
+                                    class="status-btn" 
+                                    style="padding: 6px 12px; border: 1px solid #3b82f6; border-radius: 6px; background: #dbeafe; color: #1e3a8a; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
+                                    Selesai
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="popup-info-row">
+                        <div class="popup-info-content">
+                            <div class="popup-label">Koordinat</div>
+                            <div class="popup-value" style="font-size: 0.85rem;">
+                                ${report.latitude.toFixed(6)}, ${report.longitude.toFixed(6)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ==================== LOAD REPORTS ====================
+    let allReportsData = [];
+    let allMarkersData = [];
+    
+    // Function to filter and display reports with multiple filters
+    function filterAndDisplayReports() {
+        // Get filter values
+        const selectedMonth = document.getElementById('monthFilter').value;
+        const selectedHeight = document.getElementById('heightFilter').value;
+        const selectedStatus = document.getElementById('statusFilter').value;
+        
+        // Clear existing markers
+        markers.clearLayers();
+        
+        // Apply all filters
+        let filteredReports = allReportsData.filter(report => {
+            // Month filter
+            if (selectedMonth !== 'all') {
+                const monthYear = report.month_year;
+                if (monthYear !== selectedMonth) return false;
+            }
+            
+            // Height filter
+            if (selectedHeight !== 'all') {
+                const floodHeight = report['Tinggi Banjir'] || report.flood_height;
+                const category = getFloodCategory(floodHeight);
+                if (category !== selectedHeight) return false;
+            }
+            
+            // Status filter
+            if (selectedStatus !== 'all') {
+                const status = report['Status'] || report.status || 'pending';
+                if (status.toLowerCase() !== selectedStatus.toLowerCase()) return false;
+            }
+            
+            return true;
+        });
+        
+        console.log('Filters applied:', { selectedMonth, selectedHeight, selectedStatus });
+        console.log('Filtered reports count:', filteredReports.length);
+        
+        const bounds = [];
+        
+        filteredReports.forEach(report => {
+            const markerData = allMarkersData.find(m => m.reportId === report.id);
+            if (markerData) {
+                markers.addLayer(markerData.marker);
+                bounds.push([markerData.lat, markerData.lng]);
+            }
+        });
+        
+        // Fit bounds to show filtered markers
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [50, 50] });
+        } else {
+            // Reset to default view if no markers
+            map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+        }
+        
+        // Update summary
+        updateFilterSummary(filteredReports.length, allReportsData.length);
+    }
+    
+    // Update filter summary text
+    function updateFilterSummary(displayed, total) {
+        document.getElementById('displayedCount').textContent = displayed;
+        document.getElementById('totalCount').textContent = total;
+    }
+    
+    // Reset all filters
+    function resetAllFilters() {
+        document.getElementById('monthFilter').value = 'all';
+        document.getElementById('heightFilter').value = 'all';
+        document.getElementById('statusFilter').value = 'all';
+        filterAndDisplayReports();
+    }
+    
+    try {
+        // Convert Jinja2 data to JavaScript
+        allReportsData = {{ reports|tojson|safe }};
+        console.log('Loading reports:', allReportsData ? allReportsData.length : 0);
+
+        if (allReportsData && allReportsData.length > 0) {
+            // Create all markers and store them
+            allReportsData.forEach(report => {
+                // Handle both snake_case and normal case
+                const lat = report.latitude || report.lat;
+                const lng = report.longitude || report.lng || report.lon;
+                const floodHeight = report['Tinggi Banjir'] || report.flood_height;
+                const address = report['Alamat'] || report.address;
+                const timestamp = report['Timestamp'] || report.timestamp;
+                const reporter = report['Nama Pelapor'] || report.reporter;
+                const status = report['Status'] || report.status || 'pending';
+                const reportId = report.id;
+
+                if (lat && lng) {
+                    const category = getFloodCategory(floodHeight);
+                    const marker = L.marker(
+                        [parseFloat(lat), parseFloat(lng)],
+                        { icon: getMarkerIcon(category) }
+                    );
+
+                    // Create report object for popup
+                    const reportObj = {
+                        id: reportId,
+                        timestamp: timestamp,
+                        address: address,
+                        flood_height: floodHeight,
+                        reporter: reporter,
+                        latitude: parseFloat(lat),
+                        longitude: parseFloat(lng),
+                        status: status
+                    };
+
+                    marker.bindPopup(createPopupContent(reportObj), {
+                        maxWidth: 350,
+                        className: 'custom-popup-container'
+                    });
+
+                    // Store marker data
+                    allMarkersData.push({
+                        reportId: reportId,
+                        marker: marker,
+                        lat: parseFloat(lat),
+                        lng: parseFloat(lng)
+                    });
+                }
+            });
+
+            map.addLayer(markers);
+            
+            // Display all reports initially
+            filterAndDisplayReports();
+            
+            // Add event listeners for all filters
+            document.getElementById('monthFilter').addEventListener('change', filterAndDisplayReports);
+            document.getElementById('heightFilter').addEventListener('change', filterAndDisplayReports);
+            document.getElementById('statusFilter').addEventListener('change', filterAndDisplayReports);
+            document.getElementById('resetFilters').addEventListener('click', resetAllFilters);
+        } else {
+            console.log('No reports to display');
+        }
+    } catch (error) {
+        console.error('Error loading reports:', error);
+        console.error('Error details:', error.message);
+    }
+
+    // Function to update status via API
+    function updateStatus(reportId, newStatus) {
+        if (!confirm(`Ubah status laporan #${reportId} menjadi "${newStatus}"?`)) {
+            return;
+        }
+        
+        fetch(`/api/update-status/${reportId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                
+                // Update status in the popup without reloading page
+                const statusElement = document.getElementById(`status-${reportId}`);
+                if (statusElement) {
+                    // Remove old classes
+                    statusElement.classList.remove('pending', 'terverifikasi', 'selesai');
+                    // Add new class
+                    statusElement.classList.add(newStatus);
+                    
+                    // Update text
+                    const statusText = {
+                        'pending': 'Pending',
+                        'terverifikasi': 'Terverifikasi',
+                        'selesai': 'Selesai'
+                    };
+                    statusElement.textContent = statusText[newStatus] || newStatus;
+                }
+                
+                // Update status in the reports array so filter works correctly
+                const report = allReports.find(r => r.id === reportId);
+                if (report) {
+                    report.Status = newStatus;
+                    report.status = newStatus;
+                }
+                
+                // DON'T reload the page - just update UI
+                // window.location.reload(); // REMOVED
+                
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat mengubah status');
+        });
+    }
+
+    // ==================== STATUS INFO MODAL CONTROL ====================
+    const statusInfoBtn = document.getElementById('statusInfoBtn');
+    const statusInfoModal = document.getElementById('statusInfoModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const closeModalBtnFooter = document.getElementById('closeModalBtnFooter');
+
+    // Open modal
+    statusInfoBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        statusInfoModal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scroll
+    });
+
+    // Close modal - X button
+    closeModalBtn.addEventListener('click', function() {
+        statusInfoModal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    });
+
+    // Close modal - Footer button
+    closeModalBtnFooter.addEventListener('click', function() {
+        statusInfoModal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    });
+
+    // Close modal - Click outside
+    statusInfoModal.addEventListener('click', function(e) {
+        if (e.target === statusInfoModal) {
+            statusInfoModal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // Close modal - ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && statusInfoModal.classList.contains('show')) {
+            statusInfoModal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+});
+</script>
+{% endblock %}

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geocoded Flood Reports Map</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; }
+        .info-box {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-box">
+        <h3>Geocoded Flood Reports</h3>
+        <p>Total: <strong>13</strong></p>
+        <p>Generated: 2026-02-01 00:57:28</p>
+    </div>
+    <div id="map"></div>
+    
+    <script>
+        var map = L.map('map').setView([-6.412630200000001, 109.81675463076924], 12);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        
+        var markers = [];
+
+        var marker146 = L.circleMarker([-6.161569, 106.7438905], {
+            radius: 8,
+            fillColor: '#ef4444',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker146.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #146</h4>
+                <p><strong>Address:</strong><br>jakarta barat</p>
+                <p><strong>Reporter:</strong> vbnbnfgn</p>
+                <p><strong>Flood Height:</strong> Setinggi mata kaki (10-20 cm)</p>
+                <p><strong>Date:</strong> 2026-01-27 07:11:56</p>
+                <p><strong>Confidence:</strong> <span style="color: #ef4444;">LOW</span></p>
+                <p><strong>Coordinates:</strong><br>-6.161569, 106.743891</p>
+            </div>
+        `);
+        
+        markers.push(marker146);
+
+        var marker147 = L.circleMarker([-7.4519221, 110.5435914], {
+            radius: 8,
+            fillColor: '#ef4444',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker147.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #147</h4>
+                <p><strong>Address:</strong><br>desa ampel, boyolali</p>
+                <p><strong>Reporter:</strong> fhfgbdbre</p>
+                <p><strong>Flood Height:</strong> Setinggi betis (20-40 cm)</p>
+                <p><strong>Date:</strong> 2026-01-27 07:00:58</p>
+                <p><strong>Confidence:</strong> <span style="color: #ef4444;">LOW</span></p>
+                <p><strong>Coordinates:</strong><br>-7.451922, 110.543591</p>
+            </div>
+        `);
+        
+        markers.push(marker147);
+
+        var marker148 = L.circleMarker([-7.5395205, 110.7481578], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker148.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #148</h4>
+                <p><strong>Address:</strong><br>desa malangjiwan, colomadu, karanganyar</p>
+                <p><strong>Reporter:</strong> poiuytr</p>
+                <p><strong>Flood Height:</strong> Setinggi betis (20-40 cm)</p>
+                <p><strong>Date:</strong> 2026-01-27 06:38:09</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-7.539521, 110.748158</p>
+            </div>
+        `);
+        
+        markers.push(marker148);
+
+        var marker149 = L.circleMarker([-2.1390616, 121.2037269], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker149.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #149</h4>
+                <p><strong>Address:</strong><br>Desa beteleme, sulawesi tengah</p>
+                <p><strong>Reporter:</strong> otniel</p>
+                <p><strong>Flood Height:</strong> Lebih dari lutut (>60 cm)</p>
+                <p><strong>Date:</strong> 2026-01-27 03:45:22</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-2.139062, 121.203727</p>
+            </div>
+        `);
+        
+        markers.push(marker149);
+
+        var marker150 = L.circleMarker([-6.922209, 107.6574616], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker150.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #150</h4>
+                <p><strong>Address:</strong><br>jalan salatiga</p>
+                <p><strong>Reporter:</strong> bgbgb</p>
+                <p><strong>Flood Height:</strong> Setinggi lutut (40-60 cm)</p>
+                <p><strong>Date:</strong> 2026-01-27 02:57:34</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-6.922209, 107.657462</p>
+            </div>
+        `);
+        
+        markers.push(marker150);
+
+        var marker151 = L.circleMarker([-6.2068416, 106.9501593], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker151.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #151</h4>
+                <p><strong>Address:</strong><br>Jalan kemiri</p>
+                <p><strong>Reporter:</strong> nmnmnmn</p>
+                <p><strong>Flood Height:</strong> Setinggi mata kaki (10-20 cm)</p>
+                <p><strong>Date:</strong> 2026-01-26 23:07:06</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-6.206842, 106.950159</p>
+            </div>
+        `);
+        
+        markers.push(marker151);
+
+        var marker159 = L.circleMarker([-7.0348082, 108.3535542], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker159.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #159</h4>
+                <p><strong>Address:</strong><br>Desa 234</p>
+                <p><strong>Reporter:</strong> qwerty</p>
+                <p><strong>Flood Height:</strong> Setinggi betis (20-40 cm)</p>
+                <p><strong>Date:</strong> 2026-01-23 13:49:40</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-7.034808, 108.353554</p>
+            </div>
+        `);
+        
+        markers.push(marker159);
+
+        var marker160 = L.circleMarker([-7.0348082, 108.3535542], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker160.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #160</h4>
+                <p><strong>Address:</strong><br>Desa 5758</p>
+                <p><strong>Reporter:</strong> someone</p>
+                <p><strong>Flood Height:</strong> Lebih dari lutut (>60 cm)</p>
+                <p><strong>Date:</strong> 2026-01-23 13:48:37</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-7.034808, 108.353554</p>
+            </div>
+        `);
+        
+        markers.push(marker160);
+
+        var marker161 = L.circleMarker([-6.9233808, 111.1314511], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker161.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #161</h4>
+                <p><strong>Address:</strong><br>Desa Ngasem</p>
+                <p><strong>Reporter:</strong> Elvano</p>
+                <p><strong>Flood Height:</strong> Setinggi mata kaki (10-20 cm)</p>
+                <p><strong>Date:</strong> 2026-01-15 04:34:56</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-6.923381, 111.131451</p>
+            </div>
+        `);
+        
+        markers.push(marker161);
+
+        var marker163 = L.circleMarker([-7.3539667, 112.7724383], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker163.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #163</h4>
+                <p><strong>Address:</strong><br>test test test</p>
+                <p><strong>Reporter:</strong> bnmnvcc</p>
+                <p><strong>Flood Height:</strong> Setinggi mata kaki (10-20 cm)</p>
+                <p><strong>Date:</strong> 2026-01-29 14:50:01</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-7.353967, 112.772438</p>
+            </div>
+        `);
+        
+        markers.push(marker163);
+
+        var marker164 = L.circleMarker([-7.6872912, 110.4115945], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker164.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #164</h4>
+                <p><strong>Address:</strong><br>test 12345</p>
+                <p><strong>Reporter:</strong> testestes</p>
+                <p><strong>Flood Height:</strong> Setinggi mata kaki (10-20 cm)</p>
+                <p><strong>Date:</strong> 2026-01-29 22:05:26</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-7.687291, 110.411595</p>
+            </div>
+        `);
+        
+        markers.push(marker164);
+
+        var marker165 = L.circleMarker([-7.6872912, 110.4115945], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker165.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #165</h4>
+                <p><strong>Address:</strong><br>test 12345</p>
+                <p><strong>Reporter:</strong> zxzxzx</p>
+                <p><strong>Flood Height:</strong> Setinggi betis (20-40 cm)</p>
+                <p><strong>Date:</strong> 2026-01-29 22:42:45</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-7.687291, 110.411595</p>
+            </div>
+        `);
+        
+        markers.push(marker165);
+
+        var marker166 = L.circleMarker([-3.2215225, 102.3366359], {
+            radius: 8,
+            fillColor: '#f59e0b',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(map);
+        
+        marker166.bindPopup(`
+            <div style="min-width: 200px;">
+                <h4>Report #166</h4>
+                <p><strong>Address:</strong><br>tes 1234567</p>
+                <p><strong>Reporter:</strong> ppppp</p>
+                <p><strong>Flood Height:</strong> Lebih dari lutut (>60 cm)</p>
+                <p><strong>Date:</strong> 2026-01-30 20:12:26</p>
+                <p><strong>Confidence:</strong> <span style="color: #f59e0b;">MEDIUM</span></p>
+                <p><strong>Coordinates:</strong><br>-3.221522, 102.336636</p>
+            </div>
+        `);
+        
+        markers.push(marker166);
+
+        // Fit bounds to show all markers
+        if (markers.length > 0) {
+            var group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+    </script>
+</body>
+</html>

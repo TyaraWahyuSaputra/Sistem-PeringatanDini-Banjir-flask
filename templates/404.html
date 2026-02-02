@@ -1,0 +1,663 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Halaman Tidak Ditemukan</h1>
+        <p class="error-message">
+            Halaman yang Anda cari tidak ditemukan atau telah dipindahkan.
+            Silakan periksa URL atau gunakan navigasi di atas untuk menemukan halaman yang Anda inginkan.
+        </p>
+        
+        <div class="error-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fas fa-home"></i> Kembali ke Beranda
+            </a>
+            <button onclick="history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Kembali ke Halaman Sebelumnya
+            </button>
+        </div>
+        
+        <div class="error-help mt-4">
+            <h5>Mungkin Anda mencari halaman berikut:</h5>
+            <ul class="suggested-links">
+                <li>
+                    <a href="{{ url_for('lapor_banjir') }}">
+                        <i class="fas fa-file-alt"></i> Lapor Banjir
+                        <span class="link-desc">Laporkan kejadian banjir</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('catatan_laporan') }}">
+                        <i class="fas fa-list"></i> Catatan Laporan
+                        <span class="link-desc">Lihat laporan banjir</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('peta') }}">
+                        <i class="fas fa-map-marked-alt"></i> Peta Banjir
+                        <span class="link-desc">Lihat peta lokasi banjir</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('simulasi') }}">
+                        <i class="fas fa-calculator"></i> Simulasi Banjir
+                        <span class="link-desc">Prediksi risiko banjir</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('panduan') }}">
+                        <i class="fas fa-book"></i> Panduan
+                        <span class="link-desc">Baca panduan penggunaan</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="error-tech-info mt-4">
+            <details>
+                <summary>Informasi Teknis</summary>
+                <div class="tech-details">
+                    <p><strong>URL:</strong> <code>{{ request.path if request else '' }}</code></p>
+                    <p><strong>Waktu:</strong> {{ now.strftime('%d %B %Y, %H:%M:%S') if now else '' }}</p>
+                    <p><strong>Error:</strong> 404 Not Found</p>
+                    <p><strong>Metode:</strong> {{ request.method if request else '' }}</p>
+                </div>
+            </details>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.error-container {
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+    padding: 50px;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 20px;
+    text-shadow: none;
+    filter: drop-shadow(3px 3px 0 rgba(13, 110, 253, 0.1));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.error-title {
+    font-size: 2.2rem;
+    color: #1f2937;
+    margin-bottom: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.error-message {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-bottom: 40px;
+    line-height: 1.8;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.error-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.error-actions .btn {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    min-width: 220px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.error-actions .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.error-actions .btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+    border: none;
+    color: white;
+}
+
+.error-actions .btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #9ca3af);
+    border: none;
+    color: white;
+}
+
+.error-help {
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.05), rgba(13, 202, 240, 0.05));
+    border-radius: 15px;
+    border: 2px solid rgba(13, 110, 253, 0.1);
+    margin-top: 40px;
+}
+
+.error-help h5 {
+    color: #0d6efd;
+    margin-bottom: 25px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.error-help h5::before {
+    content: "💡";
+    font-size: 1.5rem;
+}
+
+.suggested-links {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.suggested-links li {
+    margin: 0;
+}
+
+.suggested-links a {
+    display: block;
+    padding: 20px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    color: #333333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.suggested-links a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.suggested-links a:hover::before {
+    transform: scaleY(1);
+}
+
+.suggested-links a:hover {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.05), rgba(13, 202, 240, 0.05));
+    border-color: #0d6efd;
+    transform: translateX(5px);
+    box-shadow: 0 5px 20px rgba(13, 110, 253, 0.15);
+}
+
+.suggested-links a i {
+    margin-right: 12px;
+    color: #0d6efd;
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.suggested-links a .link-desc {
+    display: block;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 5px;
+    margin-left: 36px;
+}
+
+.error-tech-info {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #e9ecef;
+}
+
+.error-tech-info details {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.01));
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.error-tech-info details:hover {
+    border-color: #0d6efd;
+}
+
+.error-tech-info summary {
+    padding: 18px 24px;
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.05), rgba(13, 202, 240, 0.05));
+    cursor: pointer;
+    color: #0d6efd;
+    font-weight: 600;
+    font-size: 1.05rem;
+    list-style: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.error-tech-info summary:hover {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 202, 240, 0.1));
+}
+
+.error-tech-info summary::-webkit-details-marker {
+    display: none;
+}
+
+.error-tech-info summary::before {
+    content: "▶";
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.error-tech-info details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.tech-details {
+    padding: 25px;
+    text-align: left;
+    background: white;
+}
+
+.tech-details p {
+    margin: 12px 0;
+    color: #495057;
+    display: flex;
+    align-items: start;
+    gap: 10px;
+}
+
+.tech-details strong {
+    min-width: 80px;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.tech-details code {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.05), rgba(13, 202, 240, 0.05));
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    color: #0d6efd;
+    border: 1px solid rgba(13, 110, 253, 0.1);
+    word-break: break-all;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 6rem;
+    }
+    
+    .error-title {
+        font-size: 1.8rem;
+    }
+    
+    .error-message {
+        font-size: 1.1rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .error-actions .btn {
+        width: 100%;
+        max-width: 320px;
+    }
+    
+    .suggested-links {
+        grid-template-columns: 1fr;
+    }
+    
+    .error-container {
+        padding: 35px 25px;
+    }
+    
+    .error-help {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-code {
+        font-size: 5rem;
+    }
+    
+    .error-title {
+        font-size: 1.5rem;
+    }
+    
+    .error-message {
+        font-size: 1rem;
+    }
+    
+    .error-container {
+        padding: 25px 20px;
+    }
+    
+    .error-actions .btn {
+        padding: 12px 24px;
+        font-size: 1rem;
+        min-width: 0;
+    }
+    
+    .suggested-links a {
+        padding: 15px;
+    }
+    
+    .tech-details {
+        padding: 20px;
+    }
+    
+    .tech-details p {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .tech-details strong {
+        min-width: auto;
+    }
+}
+
+/* Loading Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.error-page {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Accessibility */
+.error-actions .btn:focus,
+.suggested-links a:focus,
+.error-tech-info summary:focus {
+    outline: 3px solid #0d6efd;
+    outline-offset: 3px;
+}
+
+/* Print Styles */
+@media print {
+    .error-actions,
+    .suggested-links,
+    .error-tech-info {
+        display: none;
+    }
+    
+    .error-container {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Log 404 error for analytics
+    console.warn('404 Error: Page not found -', window.location.pathname);
+    
+    // Auto-expand technical details on desktop
+    if (window.innerWidth > 768) {
+        const details = document.querySelector('.error-tech-info details');
+        if (details) {
+            details.open = true;
+        }
+    }
+    
+    // Smooth scroll for suggested links
+    document.querySelectorAll('.suggested-links a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Add visual feedback
+            this.style.transform = 'translateX(5px) scale(0.98)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 200);
+        });
+    });
+    
+    // Add page view to error analytics
+    try {
+        const errorData = {
+            type: '404',
+            path: window.location.pathname,
+            referrer: document.referrer || 'direct',
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent.substring(0, 100)
+        };
+        
+        // In a real app, send this to your analytics service
+        console.log('Error logged:', errorData);
+        
+        // Show helpful toast
+        setTimeout(() => {
+            showToast('Jika masalah berlanjut, silakan hubungi administrator', 'info');
+        }, 1000);
+    } catch (e) {
+        // Silently fail for analytics
+        console.error('Analytics error:', e);
+    }
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    // Escape key goes back
+    if (e.key === 'Escape') {
+        history.back();
+    }
+    
+    // Enter key on focused link
+    if (e.key === 'Enter' && document.activeElement.tagName === 'A') {
+        document.activeElement.click();
+    }
+    
+    // H key goes to home
+    if (e.key === 'h' || e.key === 'H') {
+        window.location.href = "{{ url_for('index') }}";
+    }
+    
+    // B key goes back
+    if (e.key === 'b' || e.key === 'B') {
+        history.back();
+    }
+});
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) return;
+    
+    const toastId = 'toast-' + Date.now();
+    
+    const typeClasses = {
+        'success': 'bg-success',
+        'error': 'bg-danger',
+        'warning': 'bg-warning',
+        'info': 'bg-info'
+    };
+    
+    const icons = {
+        'success': '✓',
+        'error': '✕',
+        'warning': '⚠',
+        'info': 'ℹ'
+    };
+    
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white ${typeClasses[type] || 'bg-info'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <strong>${icons[type] || 'ℹ'}</strong> ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    const toastElement = document.getElementById(toastId);
+    
+    // Check if Bootstrap is available
+    if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
+        const toast = new bootstrap.Toast(toastElement, { 
+            delay: 4000,
+            autohide: true
+        });
+        toast.show();
+        
+        toastElement.addEventListener('hidden.bs.toast', function () {
+            toastElement.remove();
+        });
+    } else {
+        // Fallback for no Bootstrap
+        toastElement.style.cssText = `
+            display: block;
+            position: relative;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+            opacity: 1;
+        `;
+        
+        setTimeout(() => {
+            toastElement.style.animation = 'slideOut 0.3s ease';
+            toastElement.style.opacity = '0';
+            setTimeout(() => toastElement.remove(), 300);
+        }, 4000);
+    }
+}
+
+// Add CSS animations for toast
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Add helpful tips after delay
+setTimeout(() => {
+    console.log('%c💡 Keyboard Shortcuts:', 'color: #0d6efd; font-size: 14px; font-weight: bold;');
+    console.log('  H = Go to Home');
+    console.log('  B = Go Back');
+    console.log('  Esc = Go Back');
+}, 2000);
+
+// Track time on error page
+let timeOnPage = 0;
+const timerInterval = setInterval(() => {
+    timeOnPage++;
+    if (timeOnPage >= 10) {
+        console.log('User has been on 404 page for 10+ seconds');
+        clearInterval(timerInterval);
+        
+        // Show helpful message
+        showToast('Butuh bantuan? Lihat tautan yang disarankan di bawah', 'info');
+    }
+}, 1000);
+
+// Clean up on page leave
+window.addEventListener('beforeunload', () => {
+    clearInterval(timerInterval);
+});
+</script>
+{% endblock %}

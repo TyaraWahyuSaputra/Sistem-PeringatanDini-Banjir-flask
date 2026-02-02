@@ -1,0 +1,734 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Hero Section dengan Background Image -->
+<div class="hero-section" style="background: url('{{ url_for('static', filename='image/hero_section.jpg') }}');">
+    <div class="hero-content-wrapper">
+        <h1 class="hero-title">SISTEM PERINGATAN DINI BANJIR</h1>
+        <p class="hero-subtitle">
+            Platform monitoring dan prediksi banjir berbasis AI untuk membantu mitigasi bencana banjir.
+        </p>
+    </div>
+    <div class="hero-bottom-text">
+        <p>Tugas Akhir Talenta Unggul</p>
+        <p>Program Studi Matematika</p>
+        <p>Fakultas Sains dan Matematika</p>
+        <p>Universitas Kristen Satya Wacana</p>
+    </div>
+</div>
+
+<!-- About System - Redesigned with Scroll Animations -->
+<div class="row g-4 mb-40">
+    <!-- Left Column - About (Slide from Left) -->
+    <div class="col-12 col-lg-6">
+        <div class="card info-card h-100 scroll-animate" data-animation="slide-left">
+            <div class="card-header-modern">
+                <h2 class="card-title-modern">Tentang Sistem</h2>
+            </div>
+            <div class="card-body-modern">
+                <h3 class="subsection-title">Fungsi Utama</h3>
+                <p class="info-text">Sistem ini membantu memantau kondisi hujan dan ketinggian air untuk memberikan informasi awal mengenai potensi banjir. Data diperbarui secara berkala agar masyarakat dapat memperoleh informasi yang jelas dan terkini.</p>
+                
+                <h3 class="subsection-title mt-4">Fitur Unggulan</h3>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div>
+                            <strong>Prediksi AI</strong>
+                            <p>Menggunakan Neural Network untuk analisis risiko</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div>
+                            <strong>Analisis Statistik</strong>
+                            <p>Distribusi Gumbel untuk prediksi ekstrem</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div>
+                            <strong>Monitoring Real-time</strong>
+                            <p>Data dari BBWS Bengawan Solo</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div>
+                            <strong>Sistem Pelaporan</strong>
+                            <p>Masyarakat dapat melaporkan kondisi langsung</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column - Benefits (Slide from Right) -->
+    <div class="col-12 col-lg-6">
+        <div class="card info-card h-100 scroll-animate" data-animation="slide-right">
+            <div class="card-header-modern">
+                <h2 class="card-title-modern">Manfaat & Cara Kerja</h2>
+            </div>
+            <div class="card-body-modern">
+                <h3 class="subsection-title">Manfaat Sistem</h3>
+                <div class="benefit-list">
+                    <div class="benefit-item">
+                        
+                        <span>Meningkatkan kewaspadaan terhadap banjir</span>
+                    </div>
+                    <div class="benefit-item">
+                        
+                        <span>Mendukung persiapan dini dan pencegahan</span>
+                    </div>
+                    <div class="benefit-item">
+                        
+                        <span>Informasi mudah dipahami dan diakses</span>
+                    </div>
+                    <div class="benefit-item">
+                        
+                        <span>Koordinasi masyarakat dan pihak berwenang</span>
+                    </div>
+                    <div class="benefit-item">
+                        
+                        <span>Mengurangi dampak kerugian akibat banjir</span>
+                    </div>
+                </div>
+                
+                <h3 class="subsection-title mt-4">Cara Kerja</h3>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Pengumpulan Data</strong>
+                            <p>Sistem mengumpulkan data dari berbagai sumber monitoring</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Analisis AI</strong>
+                            <p>Algoritma AI menganalisis pola dan risiko banjir</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Visualisasi</strong>
+                            <p>Hasil prediksi ditampilkan dalam format mudah dipahami</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action Banner (Slide from Bottom with Scale) -->
+<div class="cta-banner scroll-animate" data-animation="slide-bottom">
+    <div class="cta-content">
+        <h2 class="cta-title">Butuh Bantuan atau Ingin Belajar Lebih Lanjut?</h2>
+        <p class="cta-text">Baca panduan lengkap untuk memahami cara menggunakan sistem ini secara optimal</p>
+        <a href="{{ url_for('panduan') }}" class="btn btn-light btn-lg">
+            Baca Panduan Lengkap
+        </a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero Section with Image Overlay */
+.hero-section {
+    position: relative;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    text-align: center;
+    padding: 80px 24px;
+    border-radius: 20px;
+    margin-bottom: 50px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    color: white;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Cinematic Zoom Effect - Smooth and Slow */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    background: inherit;
+    background-size: cover;
+    background-position: center;
+    animation: cinematicZoomIn 20s ease-in-out infinite alternate;
+    z-index: 0;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4));
+    z-index: 1;
+}
+
+@keyframes cinematicZoomIn {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.08);
+    }
+}
+
+.hero-content-wrapper {
+    z-index: 2;
+    position: relative;
+}
+
+/* Teks di pojok kanan bawah hero section */
+.hero-bottom-text {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    z-index: 2;
+    text-align: right;
+}
+
+.hero-bottom-text p {
+    font-size: 1.3rem;
+    margin: 2px 0;
+    line-height: 1.4;
+    color: #FFFFFF !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 
+                 1px 1px 3px rgba(0, 0, 0, 1),
+                 0 0 15px rgba(0, 0, 0, 0.6);
+    filter: brightness(1.1);
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(3px 3px 8px rgba(0, 0, 0, 0.9))
+             drop-shadow(1px 1px 4px rgba(0, 0, 0, 1))
+             drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    max-width: 800px;
+    margin: 0 auto 30px;
+    line-height: 1.8;
+    color: #FFFFFF !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 
+                 1px 1px 3px rgba(0, 0, 0, 1),
+                 0 0 15px rgba(0, 0, 0, 0.6);
+    filter: brightness(1.1);
+}
+
+.hero-cta {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.hero-cta .btn {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.hero-cta .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Section Title */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* ========================================
+   SCROLL ANIMATION STYLES
+   ======================================== */
+
+/* Base state - hidden before animation */
+.scroll-animate {
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide from Left Animation */
+.scroll-animate[data-animation="slide-left"] {
+    transform: translateX(-60px);
+}
+
+.scroll-animate[data-animation="slide-left"].animate-in {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Slide from Right Animation */
+.scroll-animate[data-animation="slide-right"] {
+    transform: translateX(60px);
+}
+
+.scroll-animate[data-animation="slide-right"].animate-in {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Slide from Bottom with Scale Animation */
+.scroll-animate[data-animation="slide-bottom"] {
+    transform: translateY(50px) scale(0.95);
+}
+
+.scroll-animate[data-animation="slide-bottom"].animate-in {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Stagger delay for sequential animation */
+.scroll-animate:nth-child(1) {
+    transition-delay: 0ms;
+}
+
+.scroll-animate:nth-child(2) {
+    transition-delay: 150ms;
+}
+
+.scroll-animate:nth-child(3) {
+    transition-delay: 300ms;
+}
+
+/* ========================================
+   CARD STYLES
+   ======================================== */
+
+.info-card {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: white;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s ease;
+    overflow: hidden;
+}
+
+.info-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    transform: translateY(-6px);
+}
+
+.card-header-modern {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 25px 30px;
+    border-bottom: 3px solid #3b82f6;
+}
+
+.card-title-modern {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.card-body-modern {
+    padding: 30px;
+}
+
+.subsection-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.info-text {
+    color: #4b5563;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+/* Feature List */
+.feature-list {
+    display: grid;
+    gap: 12px;
+}
+
+.feature-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 15px;
+    background: #eff6ff;
+    border-radius: 10px;
+    border-left: 4px solid #3b82f6;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    background: #dbeafe;
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.feature-item strong {
+    color: #1f2937;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.feature-item p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Benefit List */
+.benefit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: #f0fdf4;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #1f2937;
+}
+
+.check-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Workflow Steps */
+.workflow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.workflow-step {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #FFFFFF;
+    color: #3b82f6;
+    border: 3px solid #3b82f6;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.step-content {
+    flex: 1;
+    padding-top: 5px;
+}
+
+.step-content strong {
+    display: block;
+    color: #1f2937;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.step-content p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* CTA Banner */
+.cta-banner {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    padding: 50px 30px;
+    border-radius: 20px;
+    text-align: center;
+    margin-top: 50px;
+    box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+}
+
+.cta-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.cta-text {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.cta-banner .btn {
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 10px;
+}
+
+/* Utilities */
+.mb-40 {
+    margin-bottom: 50px;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.g-4 {
+    gap: 1.5rem;
+}
+
+.h-100 {
+    height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .hero-title {
+        font-size: 2.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.15rem;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 60px 20px;
+        min-height: 400px;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.05rem;
+    }
+    
+    .hero-bottom-text {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .hero-bottom-text p {
+        font-size: 1.05rem;
+        margin: 2px 0;
+        line-height: 1.3;
+    }
+    
+    .hero-cta {
+        flex-direction: column;
+        width: 100%;
+        max-width: 350px;
+        margin: 20px auto 0;
+    }
+    
+    .hero-cta .btn {
+        width: 100%;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .card-body-modern {
+        padding: 20px;
+    }
+    
+    .cta-banner {
+        padding: 40px 20px;
+    }
+    
+    .cta-title {
+        font-size: 1.5rem;
+    }
+    
+    .cta-text {
+        font-size: 1rem;
+    }
+    
+    /* Reduce animation distance on mobile */
+    .scroll-animate[data-animation="slide-left"] {
+        transform: translateX(-30px);
+    }
+    
+    .scroll-animate[data-animation="slide-right"] {
+        transform: translateX(30px);
+    }
+    
+    .scroll-animate[data-animation="slide-bottom"] {
+        transform: translateY(30px) scale(0.98);
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-section {
+        min-height: 350px;
+        padding: 40px 15px;
+    }
+    
+    .hero-bottom-text {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .hero-bottom-text p {
+        font-size: 0.9rem;
+        margin: 1px 0;
+        line-height: 1.3;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ========================================
+    // INTERSECTION OBSERVER FOR SCROLL ANIMATIONS
+    // ========================================
+    
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15 // Trigger when 15% of element is visible
+    };
+    
+    const animateOnScroll = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Add animation class when element comes into view
+                entry.target.classList.add('animate-in');
+                
+                // Optional: Stop observing after animation (performance optimization)
+                // Uncomment the line below if you want animation to trigger only once
+                // animateOnScroll.unobserve(entry.target);
+            } else {
+                // Optional: Remove class when element leaves viewport
+                // This creates a "re-animate on scroll back" effect
+                // Comment out the line below if you want animation to happen only once
+                entry.target.classList.remove('animate-in');
+            }
+        });
+    }, observerOptions);
+    
+    // Select all elements with scroll-animate class
+    const animatedElements = document.querySelectorAll('.scroll-animate');
+    
+    // Observe each element
+    animatedElements.forEach(element => {
+        animateOnScroll.observe(element);
+    });
+    
+    // ========================================
+    // SMOOTH SCROLL FOR ANCHOR LINKS
+    // ========================================
+    
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // ========================================
+    // PERFORMANCE: REDUCE MOTION FOR ACCESSIBILITY
+    // ========================================
+    
+    // Respect user's motion preferences
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    
+    if (prefersReducedMotion.matches) {
+        // Disable animations for users who prefer reduced motion
+        animatedElements.forEach(element => {
+            element.style.transition = 'none';
+            element.classList.add('animate-in');
+        });
+    }
+    
+    // Log page load
+    console.log(' Home page loaded with scroll animations');
+    console.log(` Animated elements: ${animatedElements.length}`);
+});
+</script>
+{% endblock %}
