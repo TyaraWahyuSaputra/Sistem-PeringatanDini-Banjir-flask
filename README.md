@@ -1,18 +1,16 @@
-# 🌊 Sistem Peringatan Dini Banjir
-
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new)
+# Sistem Peringatan Dini Banjir
 
 Sistem Peringatan Dini Banjir berbasis web untuk memantau, melaporkan, dan memprediksi banjir secara real-time dengan teknologi AI.
 
-## ✨ Fitur Utama
+##  Fitur Utama
 
-### 📱 Untuk Masyarakat
+###  Untuk Masyarakat
 - **Lapor Banjir**: Form mudah untuk melaporkan kejadian banjir dengan upload foto
 - **Peta Interaktif**: Visualisasi real-time lokasi banjir di peta
 - **Notifikasi Status**: Update status laporan (pending, terverifikasi, selesai)
 - **Geocoding Otomatis**: Konversi alamat ke koordinat GPS menggunakan OpenStreetMap
 
-### 📊 Untuk Petugas/Admin
+###  Untuk Petugas/Admin
 - **Dashboard Real-time**: Monitor semua laporan masuk
 - **Laporan Harian/Bulanan**: Statistik dan analisis data banjir
 - **Prediksi AI**: 
@@ -20,13 +18,13 @@ Sistem Peringatan Dini Banjir berbasis web untuk memantau, melaporkan, dan mempr
   - Gumbel Distribution untuk analisis kejadian ekstrem
 - **Export Data**: Sinkronisasi ke Google Sheets (optional)
 
-### 🗺️ Pemetaan & Geocoding
+###  Pemetaan & Geocoding
 - Support **seluruh wilayah Indonesia** (34 provinsi, 514 kabupaten/kota)
 - Smart address matching dengan OSM Nominatim
 - Clustering markers untuk performa optimal
 - Color-coded markers berdasarkan tinggi banjir
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Development (Local)
 
@@ -76,7 +74,7 @@ Akses aplikasi di: http://localhost:5000
    ```
 4. **Deploy!** Railway akan otomatis build dan deploy
 
-## 📋 Requirements
+##  Requirements
 
 ### Sistem Requirements
 - Python 3.11+
@@ -122,7 +120,7 @@ Lihat [requirements.txt](requirements.txt) untuk list lengkap.
 - **Google Sheets API**: Sync data (optional)
 - **Google OAuth**: Service account untuk Sheets access
 
-## 📁 Struktur Project
+##  Struktur Project
 
 ```
 flood-warning-system/
@@ -170,7 +168,7 @@ flood-warning-system/
 └── backups/                     # Database backups
 ```
 
-## 🔧 Configuration
+##  Configuration
 
 ### Environment Variables
 
@@ -205,7 +203,7 @@ Untuk enable Google Sheets sync:
    SPREADSHEET_ID=your-spreadsheet-id
    ```
 
-## 📊 Database Schema
+##  Database Schema
 
 ### Table: flood_reports
 
@@ -230,7 +228,7 @@ Untuk enable Google Sheets sync:
 | report_time | TIME | Report time |
 | created_at | DATETIME | Record creation time |
 
-## 🧪 Testing
+##  Testing
 
 ### Run Tests
 ```bash
@@ -257,13 +255,12 @@ python clean_duplicates.py
 - `fix_sync.py` - Sync database to Google Sheets
 - `update_status.py` - Bulk update report status
 
-## 📖 Documentation
+##  Documentation
 
-- [📘 Deployment Guide](DEPLOYMENT_GUIDE.md) - Complete Railway deployment guide
-- [🗺️ Geocoding Guide](README_GEOCODING.md) - OSM geocoding for Indonesia
-- [📝 Main README](README.md) - General system documentation
+- [ Geocoding Guide](README_GEOCODING.md) - OSM geocoding for Indonesia
+- [ Main README](README.md) - General system documentation
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -293,7 +290,7 @@ Solution: Ensure `__init__.py` files exist in all package folders
 
 Lihat [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) untuk troubleshooting lengkap.
 
-## 🔐 Security
+##  Security
 
 - ✅ CSRF protection dengan form tokens
 - ✅ File upload validation (type, size)
@@ -303,7 +300,7 @@ Lihat [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) untuk troubleshooting lengkap.
 - ✅ Environment variables untuk secrets
 - ✅ Rate limiting untuk API endpoints
 
-## 📈 Roadmap
+##  Roadmap
 
 - [ ] PostgreSQL support untuk production database
 - [ ] User authentication & authorization
@@ -316,7 +313,7 @@ Lihat [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) untuk troubleshooting lengkap.
 - [ ] Dark mode
 - [ ] Export reports ke PDF/Excel
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Please:
 
@@ -326,32 +323,26 @@ Contributions are welcome! Please:
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Authors
+##  Authors
 
 - **Tyara Wahyu Saputra** - *Initial work* - tyarawahyusaputra@gmail.com
 - Phone: 085156959561
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - OpenStreetMap Nominatim for geocoding service
-- Railway.app for hosting platform
+- PythonAnywhere for hosting platform
 - Flask community
 - All contributors and testers
 
-## 📞 Support
+##  Support
 
 - **Email**: tyarawahyusaputra@gmail.com
 - **Phone**: 085156959561
 - **Issues**: https://github.com/username/flood-warning-system/issues
 
 ---
-
-**Made with ❤️ for Flood Early Warning System**
-
-**Version**: 2.0.0  
-**Last Updated**: 2026-02-02  
-**Status**: ✅ Production Ready
