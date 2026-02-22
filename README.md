@@ -343,6 +343,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Email**: tyarawahyusaputra@gmail.com
 - **Phone**: 085156959561
-- **Issues**: https://github.com/username/flood-warning-system/issues
+- **Issues**: https://github.com/TyaraWahyuSaputra/Sistem-PeringatanDini-Banjir-flask
 
 ---
