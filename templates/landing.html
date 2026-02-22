@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistem Peringatan Dini Banjir - Platform monitoring dan prediksi banjir berbasis AI untuk Jawa Tengah">
+    <title>Sistem Peringatan Dini Banjir - Selamat Datang</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==================== CSS Variables (Konsisten dengan style.css) ==================== */
+        :root {
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            color: white;
+        }
+
+        /* ==================== Hero Container ==================== */
+        .hero-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Background Image */
+        .hero-background {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            animation: cinematicZoomIn 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes cinematicZoomIn {
+            0% { 
+                transform: scale(1); 
+            }
+            100% { 
+                transform: scale(1.08); 
+            }
+        }
+
+        /* Overlay */
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(15, 23, 42, 0.50) 0%,
+                rgba(30, 41, 59, 0.55) 50%,
+                rgba(15, 23, 42, 0.50) 100%
+            );
+            z-index: 1;
+        }
+
+        /* Content Wrapper */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 0 40px;
+        }
+
+        /* Badge */
+        .hero-badge {
+            display: inline-block;
+            padding: 10px 24px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #60a5fa;
+            margin-bottom: 28px;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Main Title */
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 12px rgba(96, 165, 250, 0.3));
+            opacity: 0;
+            animation: typewriterReveal 2.5s steps(50, end) 1.2s forwards, fadeIn 0.5s ease-out 1.2s forwards;
+        }
+
+        @keyframes typewriterReveal {
+            from {
+                max-height: 0;
+                overflow: hidden;
+            }
+            to {
+                max-height: 500px;
+                overflow: visible;
+            }
+        }
+
+        /* Subtitle */
+        .hero-subtitle {
+            font-size: 1.35rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 50px;
+            line-height: 1.7;
+            max-width: 700px;
+            width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            min-height: 90px;
+        }
+
+        .hero-subtitle.typing::after {
+            content: '|';
+            animation: blinkCursor 0.75s step-end infinite;
+        }
+
+        @keyframes blinkCursor {
+            from, to {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Value Props */
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+        }
+
+        .feature-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* CTA Button */
+        .hero-cta {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            box-shadow: 0 10px 35px rgba(59, 130, 246, 0.4);
+            opacity: 0;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 45px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Footer */
+        .hero-footer {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            text-align: right;
+            z-index: 2;
+        }
+
+        .hero-footer p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.7;
+            margin: 6px 0;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
+            font-weight: 500;
+            opacity: 0;
+        }
+
+        @keyframes fadeInLine {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1 !important;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== Curtain Transition Overlay ==================== */
+        .curtain-overlay {
+            position: fixed;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: top 1s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .curtain-overlay.slide-down {
+            top: 0;
+        }
+
+        .curtain-overlay.slide-up {
+            top: -100%;
+            transition: top 1s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .curtain-overlay.hidden {
+            display: none;
+        }
+
+        .curtain-logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 20px rgba(96, 165, 250, 0.5));
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.6s ease-out;
+        }
+
+        .curtain-overlay.slide-down .curtain-logo {
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0.5s;
+        }
+
+        .curtain-overlay.slide-up .curtain-logo {
+            opacity: 0;
+            transform: scale(0.8);
+            transition-delay: 0s;
+        }
+
+        .curtain-subtitle {
+            margin-top: 16px;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            transition: opacity 0.6s ease-out;
+        }
+
+        .curtain-overlay.slide-down .curtain-subtitle {
+            opacity: 1;
+            transition-delay: 0.7s;
+        }
+
+        .curtain-overlay.slide-up .curtain-subtitle {
+            opacity: 0;
+            transition-delay: 0s;
+        }
+
+        .curtain-spinner {
+            margin-top: 30px;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(96, 165, 250, 0.2);
+            border-top: 4px solid #60a5fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            opacity: 0;
+            transition: opacity 0.6s ease-out;
+        }
+
+        .curtain-overlay.slide-down .curtain-spinner {
+            opacity: 1;
+            transition-delay: 0.9s;
+        }
+
+        .curtain-overlay.slide-up .curtain-spinner {
+            opacity: 0;
+            transition-delay: 0s;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+                padding: 0 10px;
+            }
+
+            .hero-features {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .feature-icon {
+                font-size: 2rem;
+            }
+
+            .feature-text {
+                font-size: 0.9rem;
+            }
+
+            .hero-cta {
+                padding: 18px 40px;
+                font-size: 1.1rem;
+                width: 90%;
+                max-width: 350px;
+            }
+
+            .hero-footer {
+                /* Tetap di bottom-right, tapi dengan padding lebih kecil untuk mobile */
+                bottom: 20px;
+                right: 20px;
+                text-align: right;
+            }
+
+            .hero-footer p {
+                font-size: 0.95rem;
+            }
+
+            .hero-content {
+                padding: 0 20px;
+            }
+
+            .hero-badge {
+                font-size: 0.8rem;
+                padding: 8px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+                width: 90%;
+                min-height: 120px;
+            }
+
+            .hero-footer p {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-container">
+        <!-- Background Image -->
+        <img src="{{ url_for('static', filename='image/landing.jpg') }}" 
+            alt="Sistem Peringatan Dini Banjir" 
+            class="hero-background">
+
+        <!-- Overlay -->
+        <div class="hero-overlay"></div>
+
+        <!-- Main Content -->
+        <div class="hero-content">
+
+            <!-- Title -->
+            <h1 class="hero-title">
+                SI-RADIN<br>
+                SISTEM PERINGATAN<br>DINI BANJIR
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="hero-subtitle" id="subtitle-text" data-text="Platform monitoring dan prediksi banjir berbasis AI untuk mendukung pemerintah daerah dalam penanggulangan bencana banjir."></p>
+
+            <!-- CTA Button -->
+            <a href="{{ url_for('index') }}" class="hero-cta">
+                MASUK KE SISTEM
+            </a>
+        </div>
+
+        <!-- Footer (Academic Attribution) -->
+        <div class="hero-footer">
+            <p class="footer-line">Tugas Akhir Talenta Unggul</p>
+            <p class="footer-line">Program Studi Matematika</p>
+            <p class="footer-line">Fakultas Sains dan Matematika</p>
+            <p class="footer-line">Universitas Kristen Satya Wacana</p>
+        </div>
+    </div>
+
+    <!-- Curtain Transition Overlay -->
+    <div class="curtain-overlay" id="curtainOverlay">
+        <div class="curtain-logo">SI-RADIN</div>
+        <div class="curtain-subtitle">Memuat Dashboard...</div>
+        <div class="curtain-spinner"></div>
+    </div>
+
+    <script>
+        // Typewriter effect for subtitle
+        function typeWriter() {
+            const subtitle = document.getElementById('subtitle-text');
+            const ctaButton = document.querySelector('.hero-cta');
+            const footerLines = document.querySelectorAll('.footer-line');
+            const text = subtitle.getAttribute('data-text');
+            let index = 0;
+            
+            console.log('Footer lines found:', footerLines.length);
+            
+            // Show subtitle and add typing class
+            setTimeout(() => {
+                subtitle.style.opacity = '1';
+                subtitle.classList.add('typing');
+                
+                const typing = setInterval(() => {
+                    if (index < text.length) {
+                        subtitle.textContent += text.charAt(index);
+                        index++;
+                    } else {
+                        clearInterval(typing);
+                        console.log('Typing finished');
+                        
+                        // Remove cursor after typing is done
+                        setTimeout(() => {
+                            subtitle.classList.remove('typing');
+                            console.log('Cursor removed');
+                            
+                            // Show CTA Button immediately after cursor removed
+                            setTimeout(() => {
+                                ctaButton.style.animation = 'scaleIn 0.6s ease-out forwards';
+                                console.log('CTA Button animated');
+                                
+                                // Show Footer lines one by one shortly after CTA Button
+                                setTimeout(() => {
+                                    console.log('Starting footer animation');
+                                    footerLines.forEach((line, idx) => {
+                                        setTimeout(() => {
+                                            line.style.opacity = '1';
+                                            line.style.animation = 'fadeInLine 0.5s ease-out forwards';
+                                            console.log('Footer line', idx + 1, 'animated');
+                                        }, idx * 150); // 150ms delay between each line
+                                    });
+                                }, 300); // 300ms setelah CTA
+                            }, 100); // 100ms
+                        }, 300); // 300ms
+                    }
+                }, 40); // Speed of typing (40ms per character)
+            }, 3500); // Delay before starting (3.5s)
+        }
+        
+        // Start typewriter when page loads
+        window.addEventListener('DOMContentLoaded', typeWriter);
+        
+        // Curtain transition effect
+        const ctaButton = document.querySelector('.hero-cta');
+        const curtainOverlay = document.getElementById('curtainOverlay');
+        
+        ctaButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Step 1: Curtain turun dari atas (slide-down)
+            curtainOverlay.classList.add('slide-down');
+            
+            // Step 2: Setelah 1.8 detik, curtain mulai naik dan langsung redirect
+            setTimeout(() => {
+                curtainOverlay.classList.remove('slide-down');
+                curtainOverlay.classList.add('slide-up');
+                
+                // Redirect immediately saat curtain mulai naik
+                // Sehingga dashboard sudah load sebelum curtain terlihat
+                setTimeout(() => {
+                    window.location.href = ctaButton.href;
+                }, 100); // Redirect sangat cepat setelah mulai naik (100ms)
+            }, 1800); // Dikurangi dari 2000ms ke 1800ms agar lebih cepat
+        });
+    </script>
+</body>
+</html>

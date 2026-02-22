@@ -1,0 +1,958 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Hero Section dengan Background Image -->
+<div class="hero-section" style="background: url('{{ url_for('static', filename='image/hero_section.jpg') }}');">
+    <div class="hero-content-wrapper">
+        <h1 class="hero-title">LAPOR BANJIR</h1>
+        <p class="hero-subtitle">
+            Laporkan kondisi banjir di sekitar Anda untuk membantu sistem peringatan dini
+        </p>
+    </div>
+</div>
+
+<!-- ✨ SECTION 1: PANDUAN LENGKAP PELAPORAN (Menggunakan Select Dropdown) -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title mb-0"> Panduan Lengkap Pelaporan</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Cara Pelaporan -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><i class="fas fa-list-ol me-2"></i><strong>Cara Pelaporan</strong></label>
+                        <select class="form-control panduan-select" size="7">
+                            <option>1. Isi alamat lengkap lokasi banjir (minimal 10 karakter)</option>
+                            <option>2. Pilih salah satu dari 4 kategori tinggi banjir</option>
+                            <option>3. Tulis nama lengkap Anda sebagai pelapor</option>
+                            <option>4. Masukkan nomor telepon untuk verifikasi (wajib diisi)</option>
+                            <option>5. Upload foto kondisi banjir yang jelas (max 5MB)</option>
+                            <option>6. Centang persetujuan bahwa data yang diberikan akurat</option>
+                            <option>7. Klik tombol "Kirim Laporan"</option>
+                        </select>
+                    </div>
+
+                    <!-- Kategori Tinggi Banjir -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><i class="fas fa-water me-2"></i><strong>Kategori Tinggi Banjir</strong></label>
+                        <select class="form-control panduan-select" size="4">
+                            <option>🟢 Mata Kaki (10-20 cm) - Banjir ringan</option>
+                            <option>🟡 Betis (20-40 cm) - Banjir sedang</option>
+                            <option>🟠 Lutut (40-60 cm) - Banjir tinggi</option>
+                            <option>🔴 Lebih dari Lutut (>60 cm) - Banjir sangat tinggi</option>
+                        </select>
+                    </div>
+
+                    <!-- Tips Foto Berkualitas -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><i class="fas fa-camera me-2"></i><strong>Tips Foto Berkualitas</strong></label>
+                        <select class="form-control panduan-select" size="5">
+                            <option>✓ Jelas & Fokus - Pastikan foto tidak blur dan terang</option>
+                            <option>✓ Tunjukkan Ketinggian - Sertakan penanda seperti mobil/rumah</option>
+                            <option>✓ Lokasi Terlihat - Tampilkan landmark atau penanda lokasi</option>
+                            <option>✓ Multiple Angles - Ambil foto dari beberapa sudut</option>
+                            <option>✓ Format Benar - JPG, PNG, atau GIF (maksimal 5MB)</option>
+                        </select>
+                    </div>
+
+                    <!-- Informasi yang Dibutuhkan -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><i class="fas fa-info-circle me-2"></i><strong>Informasi yang Dibutuhkan</strong></label>
+                        <select class="form-control panduan-select" size="5">
+                            <option disabled style="font-weight: bold; color: #10b981;">✓ DATA WAJIB:</option>
+                            <option>  • Alamat lengkap (minimal 10 karakter)</option>
+                            <option>  • Tinggi banjir (pilih kategori)</option>
+                            <option>  • Nama pelapor & Foto kondisi (max 5MB)</option>
+                            <option>  • Nomor telepon</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✨ SECTION 2: FORM LAPORAN BANJIR -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="card-title mb-0"> Form Laporan Banjir</h2>
+                <div class="form-progress">
+                    <small class="text-muted">Progress: <strong id="formProgress">0%</strong></small>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('lapor_banjir') }}" enctype="multipart/form-data" id="reportForm" novalidate>
+                    <!-- Hidden Token -->
+                    <input type="hidden" name="form_token" value="{{ form_token }}">
+                    
+                    <!-- Row 1: Alamat & Tinggi Banjir -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="address" class="form-label">
+                                    <i class="fas fa-map-marker-alt"></i> Alamat Lengkap <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                    class="form-control" 
+                                    id="address" 
+                                    name="address" 
+                                    placeholder="Contoh: Isi sesuai dengan contoh petunjuk di bawah"
+                                    required
+                                    minlength="10"
+                                    maxlength="200">
+                                <div class="invalid-feedback" id="addressError">
+                                    Alamat minimal 10 karakter
+                                </div>
+                                <div class="form-text">
+                                    Contoh: Jalan/kelurahan, kecamatan. kabupaten. provinsi, negara
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="flood_height" class="form-label">
+                                    <i class="fas fa-water"></i> Tinggi Banjir <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-control" id="flood_height" name="flood_height" required>
+                                    <option value="" selected disabled>Pilih tinggi banjir</option>
+                                    <option value="Setinggi mata kaki (10-20 cm)">🟢 Mata kaki (10-20 cm)</option>
+                                    <option value="Setinggi betis (20-40 cm)">🟡 Betis (20-40 cm)</option>
+                                    <option value="Setinggi lutut (40-60 cm)">🟠 Lutut (40-60 cm)</option>
+                                    <option value="Lebih dari lutut (>60 cm)">🔴 >Lutut (>60 cm)</option>
+                                </select>
+                                <div class="invalid-feedback" id="heightError">
+                                    Pilih tinggi banjir
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Nama & Telepon -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="reporter_name" class="form-label">
+                                    <i class="fas fa-user"></i> Nama Pelapor <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                    class="form-control" 
+                                    id="reporter_name" 
+                                    name="reporter_name" 
+                                    placeholder="Nama lengkap Anda"
+                                    required
+                                    minlength="3"
+                                    maxlength="50">
+                                <div class="invalid-feedback" id="nameError">
+                                    Nama minimal 3 karakter
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="reporter_phone" class="form-label">
+                                    <i class="fas fa-phone"></i> Nomor Telepon <span class="text-danger">*</span>
+                                </label>
+                                <input type="tel" 
+                                    class="form-control" 
+                                    id="reporter_phone" 
+                                    name="reporter_phone" 
+                                    placeholder="08123456789"
+                                    pattern="^(\+62|62|0)8[1-9][0-9]{6,11}$"
+                                    required>
+                                <div class="invalid-feedback" id="phoneError">
+                                    Format: 081234567890 (10-13 digit)
+                                </div>
+                                <div class="form-text">
+                                    Untuk verifikasi dan konfirmasi laporan
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Upload Foto -->
+                    <div class="form-group">
+                        <label for="photo" class="form-label">
+                            <i class="fas fa-camera"></i> Foto Kondisi Banjir <span class="text-danger">*</span>
+                        </label>
+                        <div class="upload-area" id="uploadArea">
+                            <input type="file" 
+                                class="form-control" 
+                                id="photo" 
+                                name="photo" 
+                                accept="image/*" 
+                                required
+                                style="display: none;">
+                            <div class="upload-placeholder" id="uploadPlaceholder">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                <p class="mb-2">Klik atau drag & drop foto di sini</p>
+                                <small class="text-muted">JPG, PNG, GIF (Max. 5MB)</small>
+                            </div>
+                        </div>
+                        <div class="invalid-feedback" id="photoError">
+                            Foto wajib diunggah
+                        </div>
+                        
+                        <!-- Photo Preview -->
+                        <div class="photo-preview mt-3" id="photoPreview" style="display: none;">
+                            <div class="preview-container">
+                                <img src="" alt="Preview" class="img-thumbnail">
+                                <div class="preview-actions mt-2">
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="showPhotoModal(document.querySelector('#photoPreview img').src)">
+                                        <i class="fas fa-search-plus"></i> Lihat
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="removePhoto()">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Terms Checkbox -->
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                Saya menyatakan bahwa informasi yang diberikan adalah <strong>benar</strong> dan dapat dipertanggungjawabkan
+                            </label>
+                            <div class="invalid-feedback" id="termsError">
+                                Anda harus menyetujui pernyataan ini
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 5: Submit Buttons -->
+                    <div class="form-actions mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> Kirim Laporan
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-lg" onclick="resetForm()">
+                            <i class="fas fa-redo"></i> Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✨ FLASH MESSAGES - HASIL SUBMIT LAPORAN (Di bawah form) -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="row mt-4" id="submissionResult">
+    <div class="col-12">
+        <div class="submission-result-container">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'error' else 'warning' if category == 'warning' else 'info' }}" role="alert">
+                <strong>
+                    {% if category == 'success' %}✅ Berhasil!
+                    {% elif category == 'error' %}❌ Gagal!
+                    {% elif category == 'warning' %}⚠️ Perhatian!
+                    {% else %}ℹ️ Info{% endif %}
+                </strong>
+                {{ message | safe }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- ✨ SECTION 3: INFORMASI PENTING -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="info-important-box">
+            <div class="info-important-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <h3 class="info-important-title">Informasi Penting</h3>
+            <div class="info-important-content">
+                <div class="info-item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Data laporan akan ditampilkan di <strong>Peta Banjir</strong> untuk pemantauan real-time</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Tim akan <strong>memverifikasi</strong> laporan dalam 24 jam</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Laporan palsu akan <strong>ditindak</strong> sesuai ketentuan yang berlaku</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Data Anda akan dijaga <strong>kerahasiaannya</strong> dan hanya digunakan untuk keperluan sistem peringatan dini</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photo Modal -->
+<div class="modal fade" id="photoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Preview Foto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" id="modalImage" class="img-fluid" alt="Preview">
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.hero-section {
+    position: relative;
+    background: url('{{ url_for('static', filename='image/hero_section.jpg') }}');
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    text-align: center;
+    padding: 80px 24px;
+    border-radius: 20px;
+    margin-bottom: 50px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    color: white;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Cinematic Zoom Effect */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    background: inherit;
+    background-size: cover;
+    background-position: center;
+    animation: cinematicZoomIn 15s ease-in-out infinite alternate;
+    z-index: 0;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4));
+    z-index: 1;
+}
+
+@keyframes cinematicZoomIn {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.08);
+    }
+}
+
+.hero-content-wrapper {
+    z-index: 2;
+    position: relative;
+}
+
+/* Fotter bottom right */
+.hero-bottom-text {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    z-index: 2;
+    text-align: right;
+}
+
+.hero-bottom-text p {
+    font-size: 1.3rem;
+    margin: 2px 0;
+    line-height: 1.4;
+    color: #FFFFFF !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 
+                1px 1px 3px rgba(0, 0, 0, 1),
+                0 0 15px rgba(0, 0, 0, 0.6);
+    filter: brightness(1.1);
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(3px 3px 8px rgba(0, 0, 0, 0.9))
+            drop-shadow(1px 1px 4px rgba(0, 0, 0, 1))
+            drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+    color: #FFFFFF !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 
+                1px 1px 3px rgba(0, 0, 0, 1),
+                0 0 15px rgba(0, 0, 0, 0.6);
+    filter: brightness(1.1);
+}
+
+/* ✨ PANDUAN SELECT DROPDOWN STYLING */
+.panduan-select {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    color: #1e293b;
+    cursor: default;
+}
+
+.panduan-select option {
+    padding: 8px;
+    color: #1e293b;
+    background-color: #ffffff;
+}
+
+.panduan-select option:hover {
+    background-color: #e0f2fe;
+}
+
+/* Form Progress */
+.form-progress {
+    font-size: 0.9rem;
+}
+
+/* Upload Area Styling */
+.upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.02), rgba(59, 130, 246, 0.01));
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.04));
+}
+
+.upload-area.dragover {
+    border-color: #10b981;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+}
+
+.upload-placeholder i {
+    color: #94a3b8;
+}
+
+.upload-placeholder p {
+    font-weight: 600;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Photo Preview */
+.preview-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.preview-container img {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.form-actions .btn {
+    min-width: 150px;
+}
+
+/* Informasi Penting Box - Static & Centered */
+.info-important-box {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-important-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width="20" height="20" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 0h20v20H0z" fill="none"/%3E%3Cpath d="M0 0h1v1H0zM10 10h1v1h-1z" fill="%23ffffff" opacity=".1"/%3E%3C/svg%3E");
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.info-important-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.info-important-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+}
+
+.info-important-content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.info-item {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: left;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: start;
+    gap: 15px;
+}
+
+.info-item:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.info-item i {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 3px;
+    opacity: 0.9;
+    color: #3b82f6;
+}
+
+.info-item span {
+    line-height: 1.7;
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.info-item strong {
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    color: #1e293b;
+}
+
+/* Responsive untuk Info Box */
+@media (max-width: 768px) {
+    .info-important-box {
+        padding: 30px 20px;
+    }
+    
+    .info-important-title {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+    }
+    
+    .info-important-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .info-important-content {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .info-item {
+        padding: 16px;
+    }
+    
+    .info-item i {
+        font-size: 1.3rem;
+    }
+    
+    .info-item span {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .info-important-box {
+        padding: 25px 16px;
+    }
+    
+    .info-important-title {
+        font-size: 1.2rem;
+    }
+    
+    .info-important-icon {
+        font-size: 2rem;
+    }
+    
+    .info-item {
+        padding: 14px;
+        gap: 12px;
+    }
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 60px 20px;
+        min-height: 400px;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 24px !important;
+    }
+    
+    .form-control {
+        padding: 11px 14px !important;
+    }
+    
+    .card-body {
+        padding: 20px 16px !important;
+    }
+    
+    .row {
+        gap: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 40px 16px;
+        min-height: 350px;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 20px !important;
+    }
+    
+    .card-body {
+        padding: 16px !important;
+    }
+    
+    .row {
+        gap: 0 !important;
+    }
+}
+
+/* ==================== SUBMISSION RESULT STYLING ==================== */
+/* Flash messages di bawah form - lebih prominent dan PERSISTENT */
+.submission-result-container {
+    margin: 20px 0;
+    padding: 0;
+}
+
+.submission-result-container .alert {
+    font-size: 1.1rem;
+    padding: 20px 25px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border-left: 5px solid;
+    position: relative;
+    /* TIDAK ada alert-dismissible - notification persistent */
+}
+
+/* Icon indicator di pojok kanan untuk menandakan info penting */
+.submission-result-container .alert::after {
+    content: '📌';
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    opacity: 0.6;
+}
+
+.submission-result-container .alert-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #ecfdf5 100%);
+    border-left-color: #10b981;
+    color: #065f46;
+}
+
+.submission-result-container .alert-info {
+    background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+    border-left-color: #3b82f6;
+    color: #1e40af;
+}
+
+.submission-result-container .alert-warning {
+    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+    border-left-color: #f59e0b;
+    color: #92400e;
+}
+
+.submission-result-container .alert-danger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+    border-left-color: #ef4444;
+    color: #991b1b;
+}
+
+.submission-result-container .alert strong {
+    display: block;
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+
+.submission-result-container .alert-link {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin-top: 8px;
+    padding: 8px 16px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 6px;
+}
+
+.submission-result-container .alert-link:hover {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+/* Badge untuk highlight info penting */
+.submission-result-container .info-badge {
+    display: inline-block;
+    background: rgba(59, 130, 246, 0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 8px;
+    color: #3b82f6;
+}
+
+/* Highlight animation untuk menarik perhatian */
+@keyframes highlightFade {
+    0% {
+        transform: scale(0.98);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+    .submission-result-container .alert {
+        font-size: 1rem;
+        padding: 16px 18px;
+        padding-right: 50px; /* Space untuk icon pin */
+    }
+    
+    .submission-result-container .alert strong {
+        font-size: 1.15rem;
+    }
+    
+    .submission-result-container .alert::after {
+        font-size: 1.2rem;
+        top: 12px;
+        right: 15px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Upload area drag & drop
+const uploadArea = document.getElementById('uploadArea');
+const photoInput = document.getElementById('photo');
+const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+
+uploadArea.addEventListener('click', () => {
+    photoInput.click();
+});
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    
+    if (e.dataTransfer.files.length > 0) {
+        photoInput.files = e.dataTransfer.files;
+        handleFileSelect(e.dataTransfer.files[0]);
+    }
+});
+
+photoInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+    }
+});
+
+function handleFileSelect(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const preview = document.getElementById('photoPreview');
+        const img = preview.querySelector('img');
+        img.src = e.target.result;
+        preview.style.display = 'block';
+        uploadPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+function removePhoto() {
+    photoInput.value = '';
+    document.getElementById('photoPreview').style.display = 'none';
+    uploadPlaceholder.style.display = 'block';
+}
+
+function showPhotoModal(imgSrc) {
+    document.getElementById('modalImage').src = imgSrc;
+    const modal = new bootstrap.Modal(document.getElementById('photoModal'));
+    modal.show();
+}
+
+// Form progress tracker
+const formFields = ['address', 'flood_height', 'reporter_name', 'photo', 'terms'];
+function updateFormProgress() {
+    const totalFields = formFields.length;
+    let filledFields = 0;
+    
+    formFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            if (field.type === 'checkbox') {
+                if (field.checked) filledFields++;
+            } else if (field.type === 'file') {
+                if (field.files.length > 0) filledFields++;
+            } else if (field.value && field.value !== '') {
+                filledFields++;
+            }
+        }
+    });
+    
+    const progress = Math.round((filledFields / totalFields) * 100);
+    document.getElementById('formProgress').textContent = progress + '%';
+}
+
+// Add event listeners to all form fields
+formFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.addEventListener('change', updateFormProgress);
+        field.addEventListener('input', updateFormProgress);
+    }
+});
+
+function resetForm() {
+    document.getElementById('reportForm').reset();
+    removePhoto();
+    updateFormProgress();
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updateFormProgress();
+    
+    // Auto-scroll to submission result (flash messages di bawah form)
+    const submissionResult = document.getElementById('submissionResult');
+    if (submissionResult) {
+        setTimeout(() => {
+            submissionResult.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center'  // Center in viewport agar lebih terlihat
+            });
+            
+            // Optional: Add highlight animation
+            submissionResult.style.animation = 'highlightFade 2s ease-out';
+        }, 500);  // Delay 500ms untuk smooth transition
+    }
+});
+</script>
+{% endblock %}
